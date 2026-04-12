@@ -13,7 +13,7 @@ A tweet claimed that the last 10 Stanley Cup winners shared five measurable trai
 ## The Data
 
 - **Source:** NHL API via [`nhl-api-py`](https://github.com/coreyjs/nhl-api-py)
-- **Scope:** All 30 teams, 2008–2019, regular season + playoffs
+- **Scope:** All 30 (then 31 with the addition of Las Vegas to the league) teams, 2008–2019, regular season + playoffs
 - **Storage:** SQLite (`nhl_master.db`) — one row per team, per season, per stage
 - **Metrics:** PK%, PP%, xG%, xG/G, GSAx, Finishing Rate, Net xG/G
 
