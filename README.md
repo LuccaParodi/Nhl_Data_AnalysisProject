@@ -33,7 +33,7 @@ A tweet claimed that the last 10 Stanley Cup winners shared five measurable trai
 - **PK% (0.09) and PP% (0.03)** show negligible correlation — the original hypothesis doesn't hold
 - Champions are almost always elite across all metrics, but so are teams eliminated in round 2
 - **The actual finding:** these metrics define the field of contention, not the winner. Being elite is necessary, not sufficient.
-- The dynasty exception (Chicago 3x in 5 years, Pittsburgh back-to-back) suggests sustained organizational excellence matters more than any single-season metric
+- The dynasty exception (Chicago 3x in 5 years, Pittsburgh back-to-back, LA's 2 cups in 3 years) suggests sustained organizational excellence matters more than any single-season metric
 
 ## Stack
 
