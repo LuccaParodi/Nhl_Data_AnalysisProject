@@ -72,7 +72,7 @@ df = load_data()
 # Filter metrics to only those present in the dataframe
 METRICS = [(col, lbl) for col, lbl in METRICS if col in df.columns]
 METRIC_COLS = [col for col, _ in METRICS]
-METRIC_LBLS = [lbl for _, _ in METRICS]
+METRIC_LBLS = [lbl for _,  in METRICS]
 
 # Precompute normalization ranges
 col_min = {col: df[col].min() for col in METRIC_COLS}
