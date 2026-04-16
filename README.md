@@ -4,6 +4,8 @@ An 11-season analysis of NHL team performance data (2008–2019), built to audit
 
 Spoiler: *kind of, but it's complicated.*
 
+https://nhldataanalysisproject.streamlit.app/
+
 ---
 
 ## The Question
