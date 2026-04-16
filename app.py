@@ -401,6 +401,6 @@ elif page == "📖 About":
     st.markdown("---")
     col1, col2 = st.columns(2)
     with col1:
-        st.link_button("📓 View Notebook", "https://github.com")  # replace with real link
+        st.link_button("📓 View Notebook", "https://github.com/LuccaParodi/Nhl_Data_AnalysisProject")  
     with col2:
-        st.link_button("💼 LinkedIn", "https://linkedin.com")     # replace with real link
+        st.link_button("💼 LinkedIn", "https://linkedin.com/in/lucca-parodi-3bb1ba2b2")    
