@@ -221,7 +221,7 @@ if page == "🏆 Champion Dashboard":
             return ""
 
         st.dataframe(
-            df_table.style.applymap(color_delta, subset=["Δ Delta"]),
+            df_table.style.map(color_delta, subset=["Δ Delta"]),
             hide_index=True,
             use_container_width=True
         )
