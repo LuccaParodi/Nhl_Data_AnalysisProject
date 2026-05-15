@@ -286,76 +286,91 @@ elif page == "📈 Champion Rankings":
     )
     st.markdown("---")
 
-    metric_choice = st.selectbox(
-        "Metric",
-        options=[lbl for _, lbl in METRICS],
-        index=0
-    )
-    metric_col = METRIC_COLS[[lbl for _, lbl in METRICS].index(metric_choice)]
+    # Clean metric selection lookup
+    metric_labels = [lbl for _, lbl in METRICS]
+    metric_choice = st.selectbox("Metric", options=metric_labels, index=0)
+    metric_col = METRIC_COLS[metric_labels.index(metric_choice)]
 
     df_post = df[df["stage"] == "playoffs"].copy()
     seasons_sorted = sorted(df_post["season"].unique())
 
-    ranks, names, totals, colors_list = [], [], [], []
+    # Initialize all lists together to keep index alignment 1:1
+    ranks, names, totals, colors_list, valid_seasons = [], [], [], [], []
 
     for season in seasons_sorted:
         df_s = df_post[df_post["season"] == season].copy()
+        
+        # Calculate ranks safely
         df_s["rank"] = df_s[metric_col].rank(ascending=False, method="min")
         champ = df_s[df_s["is_champion"] == 1]
+        
+        # Skip if no champion is found for this season
         if champ.empty:
             continue
-        r    = int(champ["rank"].iloc[0])
+            
+        r = int(champ["rank"].iloc[0])
         name = champ["teamFullName"].iloc[0]
+        
+        # Only append to ALL lists if the champion data exists
         ranks.append(r)
         names.append(name)
         totals.append(len(df_s))
         colors_list.append(COLORS["champion"] if r <= 4 else COLORS["negative"])
+        valid_seasons.append(SEASON_LABELS[season]) # Handles labels dynamically
 
-    season_lbls = [SEASON_LABELS[s] for s in seasons_sorted if not df_post[
-        (df_post["season"] == s) & (df_post["is_champion"] == 1)].empty]
+    # Prevent crash if data is empty
+    if not valid_seasons:
+        st.warning("No champion data found for the selected metrics/seasons.")
+    else:
+        fig = go.Figure()
 
-    fig = go.Figure()
+        # Field bars (Total playoff teams)
+        fig.add_trace(go.Bar(
+            x=valid_seasons, 
+            y=totals,
+            marker_color="#2a3a4a", 
+            name="Total playoff teams",
+            hoverinfo="skip"
+        ))
+        
+        # Champion rank bars
+        fig.add_trace(go.Bar(
+            x=valid_seasons, 
+            y=ranks,
+            marker_color=colors_list,
+            name="Champion rank",
+            text=[f"#{r} — {n}" for r, n in zip(ranks, names)],
+            textposition="outside",
+            hovertemplate="%{text}<extra></extra>"
+        ))
+        
+        # Top 4 line
+        fig.add_hline(y=4, line_dash="dash", line_color="white",
+                      opacity=0.5, annotation_text="Top 4 threshold")
 
-    # Field bars
-    fig.add_trace(go.Bar(
-        x=season_lbls, y=totals,
-        marker_color="#2a3a4a", name="Total playoff teams",
-        hoverinfo="skip"
-    ))
-    # Champion rank bars
-    fig.add_trace(go.Bar(
-        x=season_lbls, y=ranks,
-        marker_color=colors_list,
-        name="Champion rank",
-        text=[f"#{r} — {n}" for r, n in zip(ranks, names)],
-        textposition="outside",
-        hovertemplate="%{text}<extra></extra>"
-    ))
-    # Top 4 line
-    fig.add_hline(y=4, line_dash="dash", line_color="white",
-                  opacity=0.5, annotation_text="Top 4 threshold")
+        fig.update_layout(
+            barmode="overlay",
+            # Ensure the Y-axis range encompasses all possible ranks dynamically
+            yaxis=dict(autorange="reversed", title="Rank (1 = best)", dtick=1),
+            xaxis=dict(type='category'), # Forces plotly to treat seasons as distinct columns
+            template="plotly_dark",
+            title=f"Champion rank in {metric_choice} — Playoffs",
+            legend=dict(x=0.01, y=0.99),
+            height=500,
+            margin=dict(t=60)
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
-    fig.update_layout(
-        barmode="overlay",
-        yaxis=dict(autorange="reversed", title="Rank (1 = best)", dtick=1),
-        template="plotly_dark",
-        title=f"Champion rank in {metric_choice} — Playoffs",
-        legend=dict(x=0.01, y=0.99),
-        height=500,
-        margin=dict(t=60)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Summary table
-    st.markdown("---")
-    st.markdown("### Full ranking table")
-    summary = pd.DataFrame({
-        "Season":   season_lbls,
-        "Champion": names,
-        f"Rank ({metric_choice})": [f"#{r} / {t}" for r, t in zip(ranks, totals)],
-        "Top 4?":   ["✅" if r <= 4 else "❌" for r in ranks]
-    })
-    st.dataframe(summary, hide_index=True, use_container_width=True)
+        # Summary table
+        st.markdown("---")
+        st.markdown("### Full ranking table")
+        summary = pd.DataFrame({
+            "Season":   valid_seasons,
+            "Champion": names,
+            f"Rank ({metric_choice})": [f"#{r} / {t}" for r, t in zip(ranks, totals)],
+            "Top 4?":   ["✅" if r <= 4 else "❌" for r in ranks]
+        })
+        st.dataframe(summary, hide_index=True, use_container_width=True)
 
 # -----------------------------------------------------------------------------
 # PAGE 4 — ABOUT
